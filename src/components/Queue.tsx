@@ -83,9 +83,9 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
       currentUrl.searchParams.set('queue', base64Queue);
       setCopyInputValue(base64Queue);
 
-      window.history.pushState({}, '', currentUrl.toString());
+      window.history.replaceState({}, '', currentUrl.toString());
     }
-  }, [items]);
+  }, [items, copyInputValue]);
 
   useEffect(() => {
     const copyHandler = (event: ClipboardEvent) => {
