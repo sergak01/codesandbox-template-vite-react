@@ -1,39 +1,58 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import './App.scss';
+import { CheckRequirements } from './components/CheckRequirements.tsx';
+import { DeviceDetect } from './components/DeviceDetect.tsx';
+import { Col, Container, Row } from 'react-bootstrap';
+
+function parseHexOrUndefined(hex: string | undefined): number | undefined {
+  if (hex) {
+    const value = parseInt(hex, 16);
+
+    if (!isNaN(value)) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+const VENDOR_ID = parseHexOrUndefined(import.meta.env.VITE_VENDOR_ID);
+const PRODUCT_ID = parseHexOrUndefined(import.meta.env.VITE_PRODUCT_ID);
+const USAGE_PAGE = parseHexOrUndefined(import.meta.env.VITE_USAGE_PAGE);
+const USAGE = parseHexOrUndefined(import.meta.env.VITE_USAGE);
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <h2>On CodeSandbox!</h2>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR.
-        </p>
-
-        <p>
-          Tip: you can use the inspector button next to address bar to click on
-          components in the preview and open the code in the editor!
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <>
+      <Container>
+        <Row>
+          <Col xs={12}>
+            <h1>HID Tester</h1>
+            <div className={'text-center mb-3'}>
+              <div>
+                <code>Ctrl + C</code> - will copy queue if nothing selected
+              </div>
+              <div>
+                <code>Ctrl + V</code> - will paste queue if clipboard contain valid value
+              </div>
+            </div>
+            <div className="card">
+              <CheckRequirements>
+                {VENDOR_ID ? (
+                  <DeviceDetect
+                    vendorId={VENDOR_ID}
+                    productId={PRODUCT_ID}
+                    usagePage={USAGE_PAGE}
+                    usage={USAGE}
+                  ></DeviceDetect>
+                ) : (
+                  <div>Missing Vendor ID</div>
+                )}
+              </CheckRequirements>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 }
 
