@@ -109,7 +109,7 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
           setItems(parsed);
         }
       }
-    }
+    };
 
     window.addEventListener('copy', copyHandler);
     window.addEventListener('paste', pasteHandler);
@@ -117,12 +117,11 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
     return () => {
       window.removeEventListener('copy', copyHandler);
       window.removeEventListener('paste', pasteHandler);
-    }
+    };
   }, []);
 
   return (
     <>
-      <input id={'queue-copy'} style={{ display: 'none' }} value={copyInputValue} readOnly={true} />
       <Card>
         <Card.Header>
           <Row>
