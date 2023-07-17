@@ -80,7 +80,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
 
     useEffect(() => {
       if (!isInit) {
-        setContent(Object.assign({reportId: 0}, content));
+        setContent(Object.assign({ reportId: 0 }, content));
 
         setIsInit(true);
       }
@@ -394,7 +394,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Read Input ID</Form.Label>
+          <Form.Label>Read Feature ID</Form.Label>
           <Form.Control
             type="text"
             defaultValue={content.readReportId}
