@@ -85,9 +85,7 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
 
       window.history.replaceState({}, '', currentUrl.toString());
     }
-  }, [items, copyInputValue]);
 
-  useEffect(() => {
     const copyHandler = (event: ClipboardEvent) => {
       const selection = document.getSelection();
 
@@ -118,7 +116,7 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
       window.removeEventListener('copy', copyHandler);
       window.removeEventListener('paste', pasteHandler);
     };
-  }, []);
+  }, [items, copyInputValue]);
 
   return (
     <>

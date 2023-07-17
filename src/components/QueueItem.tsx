@@ -98,7 +98,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -134,7 +136,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -148,7 +152,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             required={true}
             step={50}
             onChange={(event) => {
-              changedContent.waitMs = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.waitMs = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -191,7 +197,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -247,7 +255,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -303,7 +313,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -317,7 +329,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.readReportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.readReportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -331,7 +345,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             required={true}
             step={50}
             onChange={(event) => {
-              changedContent.waitMs = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.waitMs = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -387,7 +403,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -401,7 +419,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.readReportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.readReportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -457,7 +477,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -471,7 +493,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.readReportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.readReportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -527,7 +551,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.reportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.reportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
@@ -541,7 +567,9 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
             minLength={1}
             required={true}
             onChange={(event) => {
-              changedContent.readReportId = parseInt(event.target.value);
+              const intValue = parseInt(event.target.value);
+
+              changedContent.readReportId = Number.isNaN(intValue) ? 0 : intValue;
 
               setContent(changedContent);
             }}
