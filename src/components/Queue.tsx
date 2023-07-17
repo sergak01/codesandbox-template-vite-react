@@ -44,6 +44,8 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
     queue.length ? queue : parseQueue(getStorageKey(device.vendorId, device.productId)),
   );
   const [copyInputValue, setCopyInputValue] = React.useState<string>(toBase64Queue(items));
+  const [queueKey, setQueueKey] = React.useState<string>(`queue-form-${Math.random()}`);
+
   const protocol = new DeviceProtocol(device);
 
   const [response, setResponse] = React.useState<Uint8Array[]>([]);
@@ -104,7 +106,8 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
         const parsed = parseBase64Queue(paste);
 
         if (Array.isArray(parsed) && parsed.length) {
-          setItems(parsed);
+          setItems([...parsed]);
+          setQueueKey(`queue-form-${Math.random()}`);
         }
       }
     };
@@ -120,7 +123,7 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
 
   return (
     <>
-      <Card>
+      <Card key={queueKey}>
         <Card.Header>
           <Row>
             <Col xs={8}>
