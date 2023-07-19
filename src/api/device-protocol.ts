@@ -46,13 +46,7 @@ export class DeviceProtocol {
   async readFeature(reportId: number, length?: number) {
     const data = await this.device.receiveFeatureReport(reportId);
 
-    const result = [];
-
-    for (let i = 0; i < data.byteLength; i++) {
-      result.push(data.getUint8(i));
-    }
-
-    return typeof length === 'number' ? result.slice(0, length) : result;
+    return new Uint8Array(data.buffer).slice(0, length).buffer;
   }
 
   async sendFeature(reportId: number, data: BufferSource) {
@@ -75,7 +69,7 @@ export class DeviceProtocol {
     let data = new ArrayBuffer(0);
 
     return await new Promise<BufferSource>((resolve) => {
-      const subscribeInputCallback = (chunk: DataView) => {
+      const subscribeInputCallback = (chunk: ArrayBuffer) => {
         data = this.bufferConcat(data, chunk);
       };
 
@@ -178,11 +172,13 @@ export class DeviceProtocol {
     const promise = new Promise<DeviceProtocolPacket[]>(async (resolve) => {
       const result = [];
 
-      for (const command of [...this.commandQueue]) {
+      for (const command of this.commandQueue) {
         console.log('Execute command', command);
 
         try {
           const commandResult = await this.executeCommand(command as DeviceProtocolPacket);
+
+          console.log('Command result', commandResult);
 
           if (commandResult) {
             eventEmitter.dispatchEvent(new CustomEvent('data', { detail: commandResult }));
@@ -190,6 +186,7 @@ export class DeviceProtocol {
             result.push(commandResult);
           }
         } catch (error) {
+          result.push(new Uint8Array());
           eventEmitter.dispatchEvent(new CustomEvent('error', { detail: error }));
 
           console.error(error);

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { QueueItem } from './QueueItem.tsx';
 import { DeviceProtocol } from '../api/device-protocol.ts';
-import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
+import { Badge, Button, Card, Col, ProgressBar, Row, Spinner } from 'react-bootstrap';
 import { DeviceProtocolRequestType } from '../api/device-protocol-packet.ts';
 import { Response } from './Response.tsx';
 
@@ -49,16 +49,22 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
   const protocol = new DeviceProtocol(device);
 
   const [response, setResponse] = React.useState<Uint8Array[]>([]);
+  const [currentRunKey, setCurrentRunKey] = React.useState<number>(Date.now());
+  const [isRunning, setIsRunning] = React.useState<boolean>(false);
 
   const run = async () => {
+    setIsRunning(true);
+    setCurrentRunKey(Date.now());
     setResponse([]);
 
     protocol.pushCommand(...items.map((item) => protocol.parseCommand(item.type, item.content.reportId, item.content)));
 
-    const stream = protocol.executeCommandQueue();
+    const response: Uint8Array[] = [];
 
     const dataHandler = (event: Event) => {
-      setResponse([...response, event.detail ? new Uint8Array(event.detail) : new Uint8Array()]);
+      response.push(event.detail ? new Uint8Array(event.detail) : new Uint8Array());
+
+      setResponse([...response]);
     };
 
     const endHandler = (event: Event) => {
@@ -70,7 +76,11 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
 
       stream.removeEventListener('data', dataHandler);
       stream.removeEventListener('end', endHandler);
+
+      setIsRunning(false);
     };
+
+    const stream = protocol.executeCommandQueue();
 
     stream.addEventListener('data', dataHandler);
     stream.addEventListener('end', endHandler);
@@ -119,7 +129,7 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
       window.removeEventListener('copy', copyHandler);
       window.removeEventListener('paste', pasteHandler);
     };
-  }, [items, copyInputValue]);
+  }, [items, response, copyInputValue, currentRunKey, isRunning]);
 
   return (
     <>
@@ -194,12 +204,12 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
             </Button>
           </div>
 
-          {response.length ? (
+          {response.length || isRunning ? (
             <>
               <hr />
-              <div className={'mt-3'}>
+              <div className={'mt-3'} key={currentRunKey}>
                 {response.map((item, index) => (
-                  <div key={`response-item-${index}`} className={'border-bottom pb-2 mb-1'}>
+                  <div key={`response-item-${currentRunKey}-${index}`} className={'border-bottom pb-2 mb-1'}>
                     <Row>
                       <Col xs={12}>
                         <div
@@ -229,11 +239,24 @@ export const Queue: FunctionComponent<QueueProps> = function (props) {
           ) : (
             ''
           )}
+          {isRunning ? (
+            <div className={'mt-2'}>
+              <ProgressBar
+                key={`progress-${currentRunKey}`}
+                animated
+                min={0}
+                max={items.length}
+                now={response.length}
+              />
+            </div>
+          ) : (
+            ''
+          )}
         </Card.Body>
 
         <Card.Footer className={'text-center'}>
-          <Button onClick={run} variant={'success'} className={'me-2'}>
-            Run
+          <Button onClick={run} variant={'success'} className={'me-2'} disabled={isRunning}>
+            {!isRunning ? 'Run' : <Spinner animation="border" size="sm" />}
           </Button>
           <Button
             variant={'danger'}

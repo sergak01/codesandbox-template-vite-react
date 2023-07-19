@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { DeviceProtocolRequestType } from '../api/device-protocol-packet.ts';
-import { Badge, Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { Badge, Button, Card, Col, Form, Modal, Row } from 'react-bootstrap';
 import TagsInput from 'react-tagsinput';
 
 export interface QueueItemProps<
@@ -26,50 +26,124 @@ const QueueItemTypes = {
   [DeviceProtocolRequestType.SendOutputReportWithFeatureReport]: 'Send output report with feature report',
 };
 
-const HexInput: FunctionComponent<{ value: string[]; onChange: (value: string[]) => void }> = (props) => {
-  const { value, onChange } = props;
+const HexInputTag: FunctionComponent<
+  TagsInput.RenderTagProps & { onClick?: (e: any) => void; tagKey: string | number }
+> = (props) => {
+  const { tag, tagKey, disabled, onRemove, classNameRemove, getTagDisplayValue, onClick, ...other } = props;
 
   return (
-    <TagsInput
-      value={value}
-      addOnBlur={true}
-      addOnPaste={true}
-      addKeys={[9, 13, 32, 188]}
-      onChange={(tags) => {
-        const hexTags = tags.map((tag) => {
-          if (tag.startsWith('0x')) {
-            return tag;
-          }
+    <>
+      <Badge
+        bg={'success'}
+        key={`badge-${tagKey}`}
+        {...other}
+        style={{ fontSize: '1em' }}
+        title={`Index: ${tagKey}; Value: ${parseInt(getTagDisplayValue(tag), 16).toString(10)}`}
+      >
+        <span onClick={onClick} className={'d-inline-block'}>
+          {getTagDisplayValue(tag)}
+        </span>
 
-          return `0x${parseInt(tag, 16).toString(16).padStart(2, '0').toUpperCase()}`;
-        });
+        {!disabled && (
+          <a className={classNameRemove} style={{ color: 'white' }} onClick={() => onRemove(tagKey as number)} />
+        )}
+      </Badge>
+    </>
+  );
+};
 
-        onChange(hexTags);
-      }}
-      inputProps={{
-        placeholder: 'Add a byte',
-      }}
-      pasteSplit={(data: string) => {
-        return data.split(',').map((d) => d.trim());
-      }}
-      validationRegex={/^(0x)?[0-9a-f]{1,2}$/i}
-      renderTag={(props) => {
-        const { tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other } = props;
+const HexInput: FunctionComponent<{ value: string[]; onChange: (value: string[]) => void }> = (props) => {
+  const { value, onChange } = props;
+  const [editMode, setEditMode] = useState(false);
+  const [editValue, setEditValue] = useState('');
+  const [editIndex, setEditIndex] = useState(-1);
 
-        return (
-          <Badge
-            bg={'success'}
-            key={key}
-            {...other}
-            style={{ fontSize: '1em' }}
-            title={parseInt(getTagDisplayValue(tag), 16).toString(10)}
+  return (
+    <>
+      <TagsInput
+        value={value}
+        addOnBlur={true}
+        addOnPaste={true}
+        addKeys={[9, 13, 32, 188]}
+        onChange={(tags) => {
+          const hexTags = tags.map((tag) => {
+            if (tag.startsWith('0x')) {
+              return tag;
+            }
+
+            return `0x${parseInt(tag, 16).toString(16).padStart(2, '0').toUpperCase()}`;
+          });
+
+          onChange(hexTags);
+        }}
+        inputProps={{
+          placeholder: 'Add a byte',
+        }}
+        pasteSplit={(data: string) => {
+          return data.split(',').map((d) => d.trim());
+        }}
+        validationRegex={/^(0x)?[0-9a-f]{1,2}$/i}
+        renderTag={(props) => {
+          return (
+            <HexInputTag
+              tagKey={props.key}
+              onClick={(event) => {
+                if (event.detail > 1) {
+                  setEditMode(true);
+
+                  setEditValue(props.tag);
+                  setEditIndex(props.key);
+                }
+              }}
+              {...props}
+            />
+          );
+        }}
+      ></TagsInput>
+      <Modal show={editMode} onHide={() => setEditMode(false)} centered={true}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit byte ({editIndex})</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="text"
+            defaultValue={editValue}
+            size={'sm'}
+            autoFocus={true}
+            minLength={1}
+            maxLength={4}
+            pattern={'^(0x)?[0-9a-fA-F]{1,2}$'}
+            isInvalid={editValue.length > 0 && !/^(0x)?[0-9a-fA-F]{1,2}$/.test(editValue)}
+            required={true}
+            onChange={(event) => {
+              setEditValue(event.target.value);
+            }}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (!/^(0x)?[0-9a-fA-F]{1,2}$/.test(editValue)) {
+                return;
+              }
+
+              const changed = [...value];
+
+              changed.splice(editIndex, 1, editValue);
+
+              onChange(changed);
+              setEditMode(false);
+            }}
           >
-            {getTagDisplayValue(tag)}
-            {!disabled && <a className={classNameRemove} style={{ color: 'white' }} onClick={() => onRemove(key)} />}
-          </Badge>
-        );
-      }}
-    ></TagsInput>
+            Save
+          </Button>
+          <Button variant="secondary" onClick={() => setEditMode(false)}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
@@ -206,7 +280,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
@@ -264,7 +338,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
@@ -354,7 +428,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
@@ -428,7 +502,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
@@ -502,7 +576,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
@@ -576,7 +650,7 @@ const QueueItemTypeComponents: Record<DeviceProtocolRequestType, FunctionCompone
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Data</Form.Label>
+          <Form.Label>Data (double click on item for edit)</Form.Label>
           <HexInput
             value={tags}
             onChange={(tags: string[]) => {
