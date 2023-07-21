@@ -81,6 +81,7 @@ export const DeviceDetect: FunctionComponent<DeviceDetectProps> = function (prop
             for (const device of devices) {
               if (device.collections.length === 1) {
                 setDevice(device);
+                console.log('Selected device:', device);
 
                 localStorage.setItem(
                   'last-connected-device',
