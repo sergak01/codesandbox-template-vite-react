@@ -63,7 +63,7 @@ export class DeviceProtocol {
   }
 
   async sendOutputReport(reportId: number, data: BufferSource) {
-    return await this.device.sendReport(reportId, data).then(() => {
+    return await this.device.sendReport(reportId, new Uint8Array(this.fillToEnd([...data], 0x00, 64))).then(() => {
       return new Uint8Array().buffer;
     });
   }
