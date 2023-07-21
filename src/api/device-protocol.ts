@@ -48,7 +48,7 @@ export class DeviceProtocol {
 
     const uint8Array = new Uint8Array(data.buffer);
 
-    return new Uint8Array(uint8Array[0].valueOf() === 0 ? uint8Array.slice(1).buffer : uint8Array.buffer).slice(
+    return new Uint8Array(uint8Array[0].valueOf() === 0 ? [...uint8Array.slice(1), 0x00] : uint8Array.buffer).slice(
       0,
       length,
     ).buffer;
