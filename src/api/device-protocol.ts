@@ -46,7 +46,12 @@ export class DeviceProtocol {
   async readFeature(reportId: number, length?: number) {
     const data = await this.device.receiveFeatureReport(reportId);
 
-    return new Uint8Array(data.buffer).slice(0, length).buffer;
+    const uint8Array = new Uint8Array(data.buffer);
+
+    return new Uint8Array(uint8Array[0].valueOf() === 0 ? uint8Array.slice(1).buffer : uint8Array.buffer).slice(
+      0,
+      length,
+    ).buffer;
   }
 
   async sendFeature(reportId: number, data: BufferSource) {
