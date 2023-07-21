@@ -50,14 +50,17 @@ export class DeviceProtocol {
   }
 
   async sendFeature(reportId: number, data: BufferSource) {
-    return await this.device.sendFeatureReport(
-      reportId,
-      data.byteLength !== 65 ? new Uint8Array(this.fillToEnd([...data], 0x00, 65)) : data,
-    );
+    return await this.device
+      .sendFeatureReport(reportId, data.byteLength !== 65 ? new Uint8Array(this.fillToEnd([...data], 0x00, 65)) : data)
+      .then(() => {
+        return new Uint8Array().buffer;
+      });
   }
 
   async sendOutputReport(reportId: number, data: BufferSource) {
-    return await this.device.sendReport(reportId, data);
+    return await this.device.sendReport(reportId, data).then(() => {
+      return new Uint8Array().buffer;
+    });
   }
 
   private bufferConcat(buffer1: BufferSource, buffer2: BufferSource) {
